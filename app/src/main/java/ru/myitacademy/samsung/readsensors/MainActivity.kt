@@ -10,13 +10,12 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import ru.myitacademy.samsung.readsensors.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(),SensorEventListener {
     val noSensor = "датчик отсутствует"
-    lateinit var temp: TextView
-    lateinit var light: TextView
-    lateinit var press: TextView
-    lateinit var humid: TextView
+
     lateinit var sm: SensorManager
     var tSensor:Sensor? = null //температура
     var lSensor:Sensor? = null //освещённость
@@ -24,15 +23,13 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
     var hSensor:Sensor? = null //влажность
     var rvSensor: Sensor? = null //вращение
     var prSensor: Sensor? = null //приближение
-
+ lateinit var db: ActivityMainBinding
         override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-            temp = findViewById(R.id.temperature)
-            light = findViewById(R.id.light)
-            press = findViewById(R.id.pressure)
-            humid = findViewById(R.id.humidity)
+            db = DataBindingUtil.setContentView(this,R.layout.activity_main)
             sm = getSystemService(SENSOR_SERVICE) as SensorManager
+
+
        }
     override fun onResume() {
         super.onResume()
@@ -66,22 +63,23 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
         sm.unregisterListener(this)
     }
     override fun onSensorChanged(event: SensorEvent?) {
+
         //упражнение 4.11.1
         var h = 0f
         var t = 0f
-        if (tSensor == null) temp.text = "ТЕМПЕРАТУРА: " + noSensor
+        if (tSensor == null) db.temperature.text = "ТЕМПЕРАТУРА: " + noSensor
         else if (event!!.sensor.type == tSensor!!.type) {
-            t = event.values[0]; temp.text = "ТЕМПЕРАТУРА: " + t
+            t = event.values[0]; db.temperature.text = "ТЕМПЕРАТУРА: " + t
         }
-        if (lSensor == null) light.text = "ОСВЕЩЁННОСТЬ: " + noSensor
-        else if (event!!.sensor.type == lSensor!!.type) light.text =
+        if (lSensor == null) db.light.text = "ОСВЕЩЁННОСТЬ: " + noSensor
+        else if (event!!.sensor.type == lSensor!!.type) db.light.text =
             "ОСВЕЩЁННОСТЬ: " + event.values[0]
-        if (pSensor == null) press.text = "АТМОСФЕРНОЕ ДАВЛЕНИЕ: " + noSensor
-        else if (event!!.sensor.type == pSensor!!.type) press.text =
+        if (pSensor == null) db.pressure.text = "АТМОСФЕРНОЕ ДАВЛЕНИЕ: " + noSensor
+        else if (event!!.sensor.type == pSensor!!.type) db.pressure.text =
             "АТМОСФЕРНОЕ ДАВЛЕНИЕ: " + event.values[0]
-        if (hSensor == null) humid.text = "ОТНОСИТЕЛЬНАЯ ВЛАЖНОСТЬ: " + noSensor
+        if (hSensor == null) db.humidity.text = "ОТНОСИТЕЛЬНАЯ ВЛАЖНОСТЬ: " + noSensor
         else if (event!!.sensor.type == hSensor!!.type) {
-            h = event.values[0]; humid.text = "ОТНОСИТЕЛЬНАЯ ВЛАЖНОСТЬ: " + h
+            h = event.values[0]; db.humidity.text = "ОТНОСИТЕЛЬНАЯ ВЛАЖНОСТЬ: " + h
         }
         var str = ""
         if (tSensor != null && hSensor != null) {
